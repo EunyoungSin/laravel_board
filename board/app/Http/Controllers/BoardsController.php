@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 
 use App\Models\Boards;
 
+// ls로 목록을 보고 api 요청이 왔을 때 method를 보고 판단.
+// get일 경우에 단순 검색, post일 경우 수정. put이면 기존 데이터에 업데이트. delete로 오면 삭제.
+
 class BoardsController extends Controller
 {
     /**
@@ -54,7 +57,7 @@ class BoardsController extends Controller
      */
     public function show($id)
     {
-        $boards = Boards::find($id); // find 안에 쿼리가 다 들어가있음.
+        $boards = Boards::find($id); // find 안에 쿼리가 다 들어가있음. show 안에서 select를 해서 화면에 뿌려줌.
         $boards->hits++;
         $boards->save();
 
@@ -83,14 +86,30 @@ class BoardsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $req, $id)
+    public function update(Request $request, $id)
     {
-        $boards = new Boards([
-            'title' => $req->input('title')
-            ,'content' => $req->input('content')
-        ]);
-        $boards->save();
-        return view('detail', ['board' => $id])->with('data', $boards);
+        // DB::table('Boards')->where('id', '=', $id)->update([
+        //     'title' => $request->title
+        //     ,'content' => $request->content
+        // ]);
+
+        // $boards = new Boards([
+        //     'title' => $req->input('title')
+        //     ,'content' => $req->input('content')
+        // ]);
+        // $boards->save();
+
+        $result = Boards::find($id);
+        $result->title = $request->title;
+        $result->content = $request->content;
+        $result->save();
+
+        return redirect('/boards/'.$id);
+        // return redirect()->route('boards.show', ['board' => $id]);
+        // 요청받은 URL과 표시해야하는 URL이 다를 경우 무조건 리다이렉트를 해줘야함.
+        // show(상세)->edit(수정)->update(페이지x)->show(상세)
+        // URL  : index  show  edit  update
+        // view : list  detail edit    x
     }
 
     /**

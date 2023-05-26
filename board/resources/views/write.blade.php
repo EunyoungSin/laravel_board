@@ -9,7 +9,6 @@
 <body>
     <form action="{{route('boards.store')}}" method="post">
         @csrf
-        @method('put')
         <label for="title">제목 : </label>
         <input type="text" name="title" id="title">
         <p></p>

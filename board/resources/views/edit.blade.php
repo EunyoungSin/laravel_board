@@ -9,6 +9,7 @@
 <body>
     <form action="{{route('boards.update', ['board' => $data->id])}}" method="post">
         @csrf
+        @method('put')
         <label for="title">제목 : </label>
         <input type="text" name="title" id="title" value="{{$data->title}}">
         <br>
@@ -16,7 +17,7 @@
         <textarea name="content" id="content">{{$data->content}}</textarea>
         <br>
         <button type="submit">수정</button>
-        <button type="button" onclick="location.href='{{route('boards.show', ['board' => $data->id])}}">취소</button>
+        <button type="button" onclick="location.href='{{route('boards.show', ['board' => $data->id])}}'">취소</button>
     </form>
 </body>
 </html>
