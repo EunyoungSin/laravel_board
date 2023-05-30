@@ -1,9 +1,17 @@
 <?php
+/******************************************
+ * Project Name : laravel_board
+ * Directory    : Controllers
+ * File Name    : BoardsController.php
+ * History      : v001 0526 EY.Sin new
+ *                v002 0530 EY.Sin 유효성 체크 추가
+ *******************************************/
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Boards;
 
 // ls로 목록을 보고 api 요청이 왔을 때 method를 보고 판단.
@@ -19,7 +27,7 @@ class BoardsController extends Controller
     public function index()
     {
         // $result = Boards::all();
-        $result = Boards::select(['id', 'title', 'hits', 'created_at', 'updated_at'])->orderBy('hits', 'desc')->get();
+        $result = Boards::select(['id', 'title', 'hits', 'created_at', 'updated_at'])->orderBy('id', 'desc')->get();
         return view('list')->with('data', $result);
     }
 
@@ -30,7 +38,12 @@ class BoardsController extends Controller
      */
     public function create()
     {
+        // 002 update start
+
+        
+        // return view('index');
         return view('write');
+        // 002 update end
     }
 
     /**
@@ -39,8 +52,16 @@ class BoardsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $req)
+    public function store(Request $req) // insert
     {
+        // v002 add start
+        $req->validate([ // validate는 자동으로 리다이렉트 해줌.
+            'title' => 'required|between:3,30'
+            ,'content' => 'required|max:2000'
+        ]);
+        // v002 add end
+
+        // DB에서 불러오는 게 아니라, 새로운 엘로퀀트 모델을 생성하기 때문에 new로 시작함.
         $boards = new Boards([
             'title' => $req->input('title')
             ,'content' => $req->input('content')
@@ -93,16 +114,48 @@ class BoardsController extends Controller
         //     ,'content' => $request->content
         // ]);
 
+        // v002 add start
+        // ID를 리퀘스트 객체에 머지. ID 유효성 검사.
+        $arr = ['id' => $id];
+        // $request->merge($arr); // request가 public이 아닌 protected 였으면 merge로만 가능.
+        $request->request->add($arr); // request 객체에 $arr 배열을 추가하겠다.
+        // v002 add end
+
+        // 유효성 검사 방법 1
+        $request->validate([ // validate는 자동으로 리다이렉트 해줌.
+            'id'        => 'required|integer' // v002 add
+            ,'title'    => 'required|between:3,30'
+            ,'content'  => 'required|max:2000'
+        ]);
+
+        // 유효성 검사 방법 2
+        // $validator = Validator::make(
+        //     $request->only('id', 'title', 'content')
+        //     ,[
+        //         'id'        => 'required|integer'
+        //         ,'title'    => 'required|between:3,30'
+        //         ,'content'  => 'required|max:2000'
+        //     ]
+        // );
+
+        // if($validator->fails()) { // 실패한 게 있으면 true, 없으면 fail 불린형으로 반환
+        //     return redirect()
+        //         ->back()
+        //         ->withErrors($validator)
+        //         ->withInput($request->only('title', 'content'));
+        // }
+
+        $result = Boards::find($id);
+        $result->title = $request->title;
+        $result->content = $request->content;
+        $result->save();
+        // 수정한 방법
         // $boards = new Boards([
         //     'title' => $req->input('title')
         //     ,'content' => $req->input('content')
         // ]);
         // $boards->save();
 
-        $result = Boards::find($id);
-        $result->title = $request->title;
-        $result->content = $request->content;
-        $result->save();
 
         return redirect('/boards/'.$id);
         // return redirect()->route('boards.show', ['board' => $id]);
