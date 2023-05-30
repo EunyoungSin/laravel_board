@@ -3,6 +3,10 @@
 @section('title', 'Login')
 
 @section('contents')
+    <h1>LOGIN</h1>
+    <p></p>
+    @include('layout.errorsvalidate')
+    <div>{{isset($success) ? $success : ""}}</div>
     <form action="{{route('users.login.post')}}" method="post">
         @csrf
         <label for="email">Email : </label>

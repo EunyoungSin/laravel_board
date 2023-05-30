@@ -7,13 +7,7 @@
     <title>Write</title>
 </head>
 <body>
-    {{-- 에러가 있으면 실행 --}}
-    @if(count($errors) > 0)
-        @foreach($errors->all() as $error)
-            <div>{{$error}}</div>
-        @endforeach
-    @endif
-
+    @include('layout.errorsvalidate')
     <form action="{{route('boards.store')}}" method="post">
         @csrf
         <label for="title">제목 : </label>
