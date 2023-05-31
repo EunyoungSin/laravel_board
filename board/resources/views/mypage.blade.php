@@ -9,7 +9,6 @@
     <div>{!!session()->has('success') ? session('success') : ""!!}</div>
     <form action="{{route('users.mypage.post')}}" method="post">
         @csrf
-        
         <label for="name">Name : </label>
         <input type="text" name="name" id="name" value="{{ count($errors) > 0 ? old('name') : $data->name }}">
         <p></p>

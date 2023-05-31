@@ -29,6 +29,7 @@
             </tr>
         @endforelse
     </table>
+    <p></p>
     <a href="{{route('boards.create')}}">작성하기</a>
     <p></p>
 @endsection
