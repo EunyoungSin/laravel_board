@@ -11,7 +11,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Validator; // v002 add
 use App\Models\Boards;
 
 // ls로 목록을 보고 api 요청이 왔을 때 method를 보고 판단.
@@ -26,6 +26,11 @@ class BoardsController extends Controller
      */
     public function index()
     {
+        // 로그인 체크 (미로그인시 로그인 페이지로 이동). 프로젝트할 땐 메소드로 만들기
+        if(auth()->guest()) {
+            return redirect()->route('users.login');
+        }
+
         // $result = Boards::all();
         $result = Boards::select(['id', 'title', 'hits', 'created_at', 'updated_at'])->orderBy('id', 'desc')->get();
         return view('list')->with('data', $result);
@@ -176,4 +181,11 @@ class BoardsController extends Controller
         Boards::find($id)->delete();
         return redirect('/boards');
     }
+
+    // 로그인 체크 (미로그인시 로그인 페이지로 이동)
+    // public function loginChk() {
+    //     if(auth()->guest()) {
+    //         return redirect()->route('users.login');
+    //     }
+    // }
 }
