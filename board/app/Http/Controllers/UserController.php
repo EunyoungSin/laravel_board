@@ -15,23 +15,43 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
     function login() {
+
+        $arr['key'] = 'test';
+        $arr['kim'] = 'park';
+
+        Log::emergency('emergency', $arr);
+        Log::alert('alert', $arr);
+        Log::critical('critical', $arr);
+        Log::error('error', $arr);
+        Log::warning('warning', $arr);
+        Log::notice('notice', $arr);
+        Log::info('info', $arr);
+        Log::debug('debug', $arr);
+        // 서비스 개시 때에는 로그 레벨을 debug 윗단계로 올려두기.
+
         return view('login');
     }
 
     function loginpost(Request $req) {
+
+        Log::debug('로그인 시작');
         //유효성 체크
         $req->validate([ // validate는 자동으로 리다이렉트 해줌.
             'email'    => 'required|email|max:100'
             ,'password'  => 'regex:/^(?=.*[a-zA-Z])(?=.*[!@#$%^*-])(?=.*[0-9]).{8,20}$/'
         ]);
         
+        Log::debug('유효성 OK');
+
         // 유저정보 습득
         $user = User::where('email', $req->email)->first();
         if(!$user || !(Hash::check($req->password, $user->password))) {
+            Log::debug($req->password . ' : '. $user->password);
             $error = '아이디와 비밀번호를 확인해주세요.';
             return redirect()->back()->with('error', $error);
         }
