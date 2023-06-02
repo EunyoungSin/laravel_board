@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Boards;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -20,10 +22,40 @@ class BoardsTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function test_index_guest_redirect()
     {
-        $response = $this->get('/');
+        $response = $this->get('/boards');
 
-        $response->assertStatus(200);
+        $response->assertRedirect('/users/login');
+    }
+
+    public function test_index_user_auth_return_view() {
+        // 테스트용 유저 생성. BoardsController 파일 보고 비교하여 입력
+        $user = new User([
+            'email' => 'aa@aa.aa'
+            ,'name' => '테스트'
+            ,'password' => 'asdasd'
+        ]);
+        $user->save();
+
+        $board1 = new Boards([
+            'title' => 'test1'
+            ,'content' => 'content1'
+        ]);
+        $board1->save();
+
+        $board2 = new Boards([
+            'title' => 'test23'
+            ,'content' => 'content2'
+        ]);
+        $board2->save();
+
+        $response = $this->actingAs($user)->get('/boards');
+
+        // $this->assertAuthenticatedAs($user);
+        // $response->assertViewIs('list');
+        $response->assertViewHas('data');
+        $response->assertSee('test1');
+        $response->assertSee('test23');
     }
 }
