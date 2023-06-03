@@ -30,7 +30,8 @@ class ApiListController extends Controller
         $arr['msg'] = 'success';
         $arr['data'] = $boards->only('id', 'title');
 
-        return response()->json([$arr], 404);
+        return response()->json([$arr], 404); // $arr를 제이슨 형태로 404코드로 보내줌.
+        // laravel 기본 셋팅(status)은 200 코드. 에러 상황은 203번, 권한이 없다 300번대 에러.
         // return $arr;
     }
 

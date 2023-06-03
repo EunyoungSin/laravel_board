@@ -12,7 +12,7 @@
         @csrf
         <label for="title">제목 : </label>
         <input type="text" name="title" id="title" value="{{old('title')}}">
-        {{-- old() 세션에 있는 값을 불러옴. --}}
+        {{-- old() 세션에 있는 값을 불러옴. PHP는 다이나믹 프로퍼티를 써야했지만 라라벨은 old만 쓰면 됨--}}
         <p></p>
         <label for="content">내용 : </label>
         <textarea name="content" id="content">{{old('content')}}</textarea>
